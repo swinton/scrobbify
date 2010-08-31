@@ -7,7 +7,9 @@ import struct
 import sys
 import threading
 
-class Scrobbify:
+from threading import Thread
+
+class Scrobbify(Thread):
     protocols={
         socket.IPPROTO_TCP:'tcp',
         socket.IPPROTO_UDP:'udp',
@@ -17,27 +19,30 @@ class Scrobbify:
     expr = 'host post.audioscrobbler.com and port 80'
     
     def __init__(self, callback, interface='en0'):
+        super(Scrobbify, self).__init__()
+        self._stop = threading.Event()
+        
         self.callback = callback
         
-        p = pcap.pcapObject()
+        self.p = pcap.pcapObject()
         net, mask = pcap.lookupnet(interface)
-        p.open_live(interface, 1600, 0, 100)
-        p.setfilter(self.expr, 0, 0)
+        self.p.open_live(interface, 1600, 0, 100)
+        self.p.setfilter(self.expr, 0, 0)
         
-        def main():
-            # try-except block to catch keyboard interrupt.  Failure to shut
-            # down cleanly can result in the interface not being taken out of promisc.
-            # mode
-            try:
-                while 1:
-                    p.dispatch(1, self.handle_packet)
-            except KeyboardInterrupt:
-                print '%s' % sys.exc_type
-                print 'shutting down'
-                print '%d packets received, %d packets dropped, %d packets dropped by interface' % p.stats()
-        
-        threading.Thread(target=main).start()    
-        
+        self.start()
+    
+    def stop(self):
+        self._stop.set()
+    
+    def run(self):
+        # Failure to shut down cleanly can result in the interface not being 
+        # taken out of promisc. mode
+        while not self._stop.isSet():
+            self.p.dispatch(1, self.handle_packet)
+        print '%s' % sys.exc_type
+        print 'shutting down'
+        print '%d packets received, %d packets dropped, %d packets dropped by interface' % self.p.stats()
+    
     def decode_ip_packet(self, s):
         d={}
         d['version']=(ord(s[0]) & 0xf0) >> 4
@@ -78,7 +83,7 @@ class Scrobbify:
     
 def cb(now_playing, data):
     sys.stdout.write("Now playing %s\n" % str(now_playing))
-    sys.stdout.flush()
+    # sys.stdout.flush()
 
 if __name__ == "__main__":
     scrobbify = Scrobbify('en0', cb)
