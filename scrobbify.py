@@ -6,6 +6,7 @@ import socket
 import struct
 import sys
 import threading
+import time
 
 from threading import Thread
 
@@ -28,8 +29,6 @@ class Scrobbify(Thread):
         net, mask = pcap.lookupnet(interface)
         self.p.open_live(interface, 1600, 0, 100)
         self.p.setfilter(self.expr, 0, 0)
-        
-        self.start()
     
     def stop(self):
         self._stop.set()
@@ -67,11 +66,11 @@ class Scrobbify(Thread):
     def handle_packet(self, pktlen, data, timestamp):
         if not data:
             return
-
+            
         if not data[12:14] == '\x08\x00':
             return
             
-        decoded=self.decode_ip_packet(data[14:])
+        decoded = self.decode_ip_packet(data[14:])
         s = str(decoded['data'].encode('hex')).decode('hex')
         
         if not (s.find('POST /np_1.2') > -1 and s.find('User-Agent: Spotify') > -1):
@@ -80,10 +79,16 @@ class Scrobbify(Thread):
         self.now_playing = cgi.parse_qs(s.splitlines()[-1])
         self.callback(self.now_playing, s)
     
-    
-def cb(now_playing, data):
-    sys.stdout.write("Now playing %s\n" % str(now_playing))
-    # sys.stdout.flush()
+
 
 if __name__ == "__main__":
-    scrobbify = Scrobbify('en0', cb)
+    def cb(now_playing, data):
+        sys.stdout.write("Now playing: '%s' by '%s'.\n" % (now_playing['t'][0], now_playing['a'][0]))
+        sys.stdout.flush()
+    scrob = Scrobbify(cb, interface='en1')
+    scrob.start()
+    try:
+        while True:
+            time.sleep(2**20)
+    except (KeyboardInterrupt, SystemExit):
+        scrob.stop()
