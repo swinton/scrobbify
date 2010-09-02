@@ -1,6 +1,14 @@
 scrobbify - A Python library providing real-time 'now playing notifications' for Spotify
 =========================================================================================
 
+Overview
+--------
+There's a notable lack of [AppleScript support in the Spotify player](http://getsatisfaction.com/spotify/topics/spotify_applescript_dictionary), and I (along [with many others](http://getsatisfaction.com/spotify/topics/spotify_applescript_dictionary)) would like to do interesting things with Spotify. Things like, updating my [Adium](http://adium.im/) status with what I'm listening to on Spotify, sticking what's now playing in the office on an LED message panel, and doing other interesting mashups.
+
+So, here's a workaround, using Spotify's built-in [scrobbling](http://www.last.fm/help/faq?category=Scrobbling) feature. What I'm attempting to do, is capture the network packets that are sent from the Spotify player to Last.fm's [API](http://www.last.fm/api/intro), and extract what's now playing by inspecting the HTTP request.
+
+Yep, it's all pretty backwards, but I think it's the only viable workaround, until either Spotify adds an AppleScript dictionary, or Last.fm provides some kind of real-time webhook interface.
+
 Usage
 -----
 1. Install scrobbify from the Python Package Index, e.g. using easy_install:
@@ -27,14 +35,6 @@ Usage
         except (KeyboardInterrupt, SystemExit):
             scrob.stop()
             
-        
-About
------
-There's a notable lack of [AppleScript support in the Spotify player](http://getsatisfaction.com/spotify/topics/spotify_applescript_dictionary), and I (along [with many others](http://getsatisfaction.com/spotify/topics/spotify_applescript_dictionary)) would like to do interesting things with Spotify. Things like, updating my [Adium](http://adium.im/) status with what I'm listening to on Spotify, sticking what's now playing in the office on an LED message panel, and doing other interesting mashups.
-
-So, here's a workaround, using Spotify's built-in [scrobbling](http://www.last.fm/help/faq?category=Scrobbling) feature. What I'm attempting to do, is capture the network packets that are sent from the Spotify player to Last.fm's [API](http://www.last.fm/api/intro), and extract what's now playing by inspecting the HTTP request.
-
-Yep, it's all pretty backwards, but I think it's the only viable workaround, until either Spotify adds an AppleScript dictionary, or Last.fm provides some kind of real-time webhook interface.
 
 Feedback
 --------
