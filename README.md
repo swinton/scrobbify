@@ -7,7 +7,7 @@ Usage
 
         $ easy_install scrobbify
 
-2. Be sure to [enable scrobbling to last.fm](http://www.spotify.com/uk/blog/archives/2008/12/18/spotify-scrobbles/) in your [Spotify player preferences](spotify:config).
+2. Be sure to [enable scrobbling to last.fm](http://www.spotify.com/uk/blog/archives/2008/12/18/spotify-scrobbles/) in your Spotify player preferences.
 
 3. Use scrobbify like so:
 
@@ -38,5 +38,5 @@ Yep, it's all pretty backwards, but I think it's the only viable workaround, unt
 
 Feedback
 --------
-I'm fairly the code is sub-optimal right now, so feel free to leave me some feedback, via [email](http://scr.im/stevie) or even [twitter](http://twitter.com/steveWINton). :)
+I'm fairly certain the code is sub-optimal right now, so feel free to leave me some feedback, via [email](http://scr.im/stevie) or even [twitter](http://twitter.com/steveWINton). :)
 
